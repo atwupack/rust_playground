@@ -5,6 +5,17 @@ pub enum ParserError {
 
 pub trait Parser<I, R, IT: Iterator<Item=I>> {
     fn run(&self, iter: &mut IT) -> Result<R, ParserError>;
+
+    fn map<B, F>(self, f: F) -> MapParser<Self, F> 
+        where
+            Self: Sized,
+            F: Fn(R) -> B ,
+    {
+        MapParser{
+            parser: self,
+            func: f,
+        }
+    }
 }
 
 pub struct SimpleParser<I, R, IT: Iterator<Item=I>> {
@@ -17,12 +28,15 @@ impl<I, R, IT: Iterator<Item=I>> Parser<I, R, IT> for SimpleParser<I, R, IT> {
     }
 }
 
-pub struct MapParser<I, R, IT: Iterator<Item=I>, B> {
-    parser: Box<Parser<I, R, IT>>,
-    f: Box<Fn(R) -> B>,
+pub struct MapParser<P,F> {
+    parser: P,
+    func: F,
 }
 
-impl<I, R, IT: Iterator<Item=I>, B> Parser<I, B, IT> for MapParser<I, R, IT, B> {
+impl<R, P, F, I, IT: Iterator<Item=I>, B> Parser<I, B, IT> for MapParser<P, F>
+    where
+        P: Parser<I, R, IT>,
+{
     fn run(&self, iter: &mut IT) -> Result<B, ParserError> {
         let result = (self.parser).run(iter);
         match result {
@@ -49,11 +63,4 @@ pub fn any_token<I, IT: Iterator<Item=I>>() -> SimpleParser<I,I,IT> {
     }
 }
 
-impl<I: 'static, R: 'static, IT: 'static + Iterator<Item=I>> SimpleParser<I, R, IT> {
-    pub fn fmap<B, F: 'static + Fn(R) -> B>(self, f: F) -> MapParser<I,R,IT,B> {
-        MapParser{
-            parser: Box::new(self),
-            f: Box::new(f),
-        }
-    }
-}
+
