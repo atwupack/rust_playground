@@ -1,3 +1,5 @@
+ #![feature(fnbox)]
+
 pub mod functor;
 pub mod monad;
 pub mod parser;
