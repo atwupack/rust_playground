@@ -1,3 +1,5 @@
+pub mod prim;
+
 use std::boxed::FnBox;
 
 #[derive(Debug)]
@@ -127,23 +129,5 @@ impl<P, F, B> Parser for MapParser<P, F>
 }
 
 
-// pub fn run_parser<I, R, IT: Iterator<Item=I>, P: Parser<I, R, IT>>(parser: P, input: &mut IT) -> Result<R, ParserError> {
-//     parser.run(input)
-// }
-
-pub fn any_token<I, IT>() -> SimpleParser<I, IT, I>
-    where
-        IT: Iterator<Item=I>,
-{
-    SimpleParser {
-        parser_func: Box::new(|it| {
-            let item = it.next();
-            match item {
-                Some(i) => Ok(i),
-                None => Err(ParserError::NoMoreTokens),
-            }
-        }),
-    }
-}
 
 

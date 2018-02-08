@@ -1,4 +1,5 @@
 use parser::*;
+use parser::prim::*;
 
 #[test]
 fn test_any_token_parser() {
