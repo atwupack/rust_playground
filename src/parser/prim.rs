@@ -1,7 +1,7 @@
 use parser::SimpleParser;
 use parser::ParserError;
 
-pub fn any_token<I, IT>() -> SimpleParser<I, IT, I>
+pub fn any_token<I, IT>() -> SimpleParser<IT, I>
     where
         IT: Iterator<Item=I>,
 {

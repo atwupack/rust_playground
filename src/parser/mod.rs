@@ -11,8 +11,7 @@ pub trait Parser
     where
         Self: Sized,
 {
-    type In;
-    type Iter : Iterator<Item=Self::In>;
+    type Iter : Iterator;
     type Out;
 
     fn run(self, iter: &mut Self::Iter) -> Result<Self::Out, ParserError>;
@@ -32,7 +31,7 @@ pub trait Parser
         where
             Self: Sized + 'static,
             F: FnOnce(Self::Out) -> P2 + Sized + 'static ,
-            P2: Parser<In=Self::In, Iter=Self::Iter>,
+            P2: Parser<Iter=Self::Iter>,
     {
         BindParser{
             parser: self,
@@ -43,7 +42,7 @@ pub trait Parser
     fn seq<P2>(self, p: P2) -> BindParser<Self, P2>
         where
             Self: Sized + 'static,
-            P2: Parser<In=Self::In, Iter=Self::Iter> + 'static,
+            P2: Parser<Iter=Self::Iter> + 'static,
     {
         self.bind(|_r| {
             p
@@ -52,18 +51,17 @@ pub trait Parser
 }
 
 /// Simple parser consisting of a parsing function.
-pub struct SimpleParser<I, IT, R>
+pub struct SimpleParser<IT, R>
     where
-        IT: Iterator<Item=I>,
+        IT: Iterator,
 {
     parser_func: Box<Fn(&mut IT) -> Result<R, ParserError>>,
 }
 
-impl<I, R, IT> Parser for SimpleParser<I, IT, R>
+impl<R, IT> Parser for SimpleParser<IT, R>
     where
-        IT: Iterator<Item=I>,
+        IT: Iterator,
 {
-    type In=I;
     type Iter=IT;
     type Out=R;
 
@@ -84,9 +82,8 @@ pub struct BindParser<P1, P2>
 impl<P1, P2> Parser for BindParser<P1, P2>
     where
         P1: Parser,
-        P2: Parser<In=P1::In, Iter=P1::Iter> + 'static,
+        P2: Parser<Iter=P1::Iter> + 'static,
 {
-    type In=P1::In;
     type Iter=P1::Iter;
     type Out=P2::Out;
 
@@ -115,7 +112,6 @@ impl<P, F, B> Parser for MapParser<P, F>
         P: Parser,
         F: Fn(P::Out) -> B,
 {
-    type In=P::In;
     type Iter=P::Iter;
     type Out=B;
 
