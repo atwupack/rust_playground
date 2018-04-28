@@ -1,6 +1,6 @@
 pub mod prim;
 
-use std::boxed::FnBox;
+// use std::boxed::FnBox;
 
 #[derive(Debug)]
 pub enum ParserError {
@@ -34,7 +34,7 @@ pub trait Parser
             P2: Parser<Iter=Self::Iter>,
     {
         BindParser{
-            parser: self,
+            _parser: self,
             func: Box::new(f),
         }
     }
@@ -75,29 +75,30 @@ pub struct BindParser<P1, P2>
         P1: Parser,
         P2: Parser,
 {
-    parser: P1,
-    func: Box<FnBox(P1::Out) -> P2>,
+    _parser: P1,
+    // func: Box<FnBox(P1::Out) -> P2>,
+    func: Box<FnOnce(P1::Out) -> P2>,
 }
 
-impl<P1, P2> Parser for BindParser<P1, P2>
-    where
-        P1: Parser,
-        P2: Parser<Iter=P1::Iter> + 'static,
-{
-    type Iter=P1::Iter;
-    type Out=P2::Out;
+// impl<P1, P2> Parser for BindParser<P1, P2>
+//     where
+//         P1: Parser,
+//         P2: Parser<Iter=P1::Iter> + 'static,
+// {
+//     type Iter=P1::Iter;
+//     type Out=P2::Out;
 
-    fn run(self, iter: &mut Self::Iter) -> Result<P2::Out, ParserError> {
-        let result = (self.parser).run(iter);
-        match result {
-            Ok(o) => {
-                let p2 = (self.func)(o);
-                p2.run(iter)
-            }
-            Err(e) => Err(e),
-        }
-    }
-}
+//     fn run(self, iter: &mut Self::Iter) -> Result<P2::Out, ParserError> {
+//         let result = (self.parser).run(iter);
+//         match result {
+//             Ok(o) => {
+//                 let p2 = (self.func)(o);
+//                 p2.run(iter)
+//             }
+//             Err(e) => Err(e),
+//         }
+//     }
+// }
 
 
 /// parser mapping another parser over a function.

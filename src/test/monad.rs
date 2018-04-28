@@ -1,12 +1,12 @@
 
 
-fn positive_value(input: &i32) -> Option<i32> {
-    if *input > 0 {
-        Some(*input)
-    } else {
-        None
-    }
-}
+// fn positive_value(input: &i32) -> Option<i32> {
+//     if *input > 0 {
+//         Some(*input)
+//     } else {
+//         None
+//     }
+// }
 
 // #[test]
 // fn test_option() {
