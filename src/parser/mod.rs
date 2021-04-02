@@ -55,7 +55,7 @@ pub struct SimpleParser<IT, R>
     where
         IT: Iterator,
 {
-    parser_func: Box<Fn(&mut IT) -> Result<R, ParserError>>,
+    parser_func: Box<dyn Fn(&mut IT) -> Result<R, ParserError>>,
 }
 
 impl<R, IT> Parser for SimpleParser<IT, R>
@@ -77,7 +77,7 @@ pub struct BindParser<P1, P2>
 {
     _parser: P1,
     // func: Box<FnBox(P1::Out) -> P2>,
-    func: Box<FnOnce(P1::Out) -> P2>,
+    func: Box<dyn FnOnce(P1::Out) -> P2>,
 }
 
 // impl<P1, P2> Parser for BindParser<P1, P2>

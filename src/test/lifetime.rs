@@ -33,6 +33,6 @@ impl<'a> Foo for Bar<'a> { }
 #[test]
 fn test_trait_object() {
     let num = 5;
-    let _obj = Box::new(Bar { _x: &num }) as Box<Foo>;
+    let _obj = Box::new(Bar { _x: &num }) as Box<dyn Foo>;
 }
 

@@ -1,5 +1,5 @@
 pub struct Reader<'a, E: 'a, R> {
-    pub run_reader: Box<Fn(&E) -> R + 'a>,
+    pub run_reader: Box<dyn Fn(&E) -> R + 'a>,
 }
 
 pub fn ask<'a, E: Clone>() -> Reader<'a, E, E> {
